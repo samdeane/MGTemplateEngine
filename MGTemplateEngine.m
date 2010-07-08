@@ -60,7 +60,7 @@
 
 - (id)init
 {
-	if (self = [super init]) {
+	if ((self = [super init]) != nil) {
 		_openBlocksStack = [[NSMutableArray alloc] init];
 		_globals = [[NSMutableDictionary alloc] init];
 		_markers = [[NSMutableDictionary alloc] init];
@@ -243,7 +243,7 @@
 		// Attempt to find firstVar in stack variables.
 		NSEnumerator *stack = [_openBlocksStack reverseObjectEnumerator];
 		NSDictionary *stackFrame = nil;
-		while (stackFrame = [stack nextObject]) {
+		while ((stackFrame = [stack nextObject]) != nil) {
 			NSDictionary *vars = [stackFrame objectForKey:BLOCK_VARIABLES_KEY];
 			if (vars && [vars objectForKey:firstVar]) {
 				currObj = vars;
@@ -286,11 +286,11 @@
 		}
 	} else {
 		// Try iterative checking for array indices.
-		int numKeys = [dotBits count];
+		NSUInteger numKeys = [dotBits count];
 		if (numKeys > 1) { // otherwise no point in checking
 			NSObject *thisParent = currObj;
 			NSString *thisKey = nil;
-			for (int i = 0; i < numKeys; i++) {
+			for (NSUInteger i = 0; i < numKeys; i++) {
 				thisKey = [dotBits objectAtIndex:i];
 				NSObject *newObj = nil;
 				@try {
@@ -306,8 +306,9 @@
 					NSString *digits;
 					BOOL scanned = [scanner scanCharactersFromSet:numbersSet intoString:&digits];
 					if (scanned && digits && [digits length] > 0) {
-						int index = [digits intValue];
-						if (index >= 0 && index < [((NSArray *)currObj) count]) {
+						NSInteger index = [digits intValue];
+						if (index >= 0 && index < (NSInteger) [((NSArray *)currObj) count])
+						{
 							newObj = [((NSArray *)currObj) objectAtIndex:index];
 						}
 					}
@@ -411,7 +412,7 @@
 	_outputDisabledCount = 0;
 	[templateContents release];
 	templateContents = [templateString retain];
-	_templateLength = [templateString length];
+	_templateLength = (int) [templateString length];
 	[_templateVariables release];
 	_templateVariables = [variables deepMutableCopy];
 	remainingRange = NSMakeRange(0, [templateString length]);
@@ -618,7 +619,7 @@ but current block was started by \"%@\" marker",
 			}
 			
 			// Check to see if there are open blocks left over.
-			int openBlocks = [_openBlocksStack count];
+			NSUInteger openBlocks = [_openBlocksStack count];
 			if (openBlocks > 0) {
 				NSString *errMsg = [NSString stringWithFormat:@"Finished processing template, but %d %@ left open (%@).", 
 									openBlocks, 
@@ -639,6 +640,11 @@ but current block was started by \"%@\" marker",
 	[self reportTemplateProcessingFinished];
 	
 	return output;
+}
+
+- (NSString *)processTemplateInFileAtURL:(NSURL*) templatePath withVariables:(NSDictionary *)variables
+{
+	return [self processTemplateInFileAtPath: [templatePath path] withVariables: variables];
 }
 
 

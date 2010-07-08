@@ -76,7 +76,7 @@
 
 - (id)initWithTemplateEngine:(MGTemplateEngine *)theEngine
 {
-	if (self = [super init]) {
+	if ((self = [super init]) != nil) {
 		engine = theEngine;
 		forStack = [[NSMutableArray alloc] init];
 		sectionStack = [[NSMutableArray alloc] init];
@@ -175,7 +175,7 @@
 				// Check that endArg is a collection.
 				NSObject *obj = [engine resolveVariable:endArg];
 				if (obj && [obj respondsToSelector:@selector(objectEnumerator)] && [obj respondsToSelector:@selector(count)]) {
-					endIndex = [(NSArray *)obj count];
+					endIndex = (int) [(NSArray *)obj count];
 					if (endIndex > 0) {
 						loopEnumObject = obj;
 						valid = YES;
@@ -515,7 +515,7 @@
 				NSArray *vals = [cycle objectForKey:CYCLE_VALUES];
 				int currIndex = [[cycle objectForKey:CYCLE_INDEX] intValue];
 				currIndex++;
-				if (currIndex >= [vals count]) {
+				if (currIndex >= (NSInteger) [vals count]) {
 					currIndex = 0;
 				}
 				[cycle setObject:[NSNumber numberWithInt:currIndex] forKey:CYCLE_INDEX];

@@ -72,7 +72,7 @@
 
 #define RKLMakeString(str, hash, len, uc) ((RKLString){(str), (hash), (len), (UniChar *)(uc)})
 #define RKLClearCacheSlotLastString(ce) ({ ce->last = RKLMakeString(NULL, 0, 0, NULL); ce->lastFindRange = NSNotFoundRange; ce->lastMatchRange = NSNotFoundRange; })
-#define RKLGetRangeForCapture(regex, status, capture, range) ({ range.location = (NSUInteger)uregex_start(regex, capture, &status); range.length = (NSUInteger)uregex_end(regex, capture, &status) - range.location; status; })
+#define RKLGetRangeForCapture(regex, status, capture, range) ({ range.location = (NSUInteger) uregex_start(regex, (int32_t) capture, &status); range.length = (NSUInteger) uregex_end(regex, (int32_t) capture, &status) - range.location; status; })
 #define RKLInternalException [NSException exceptionWithName:NSInternalInconsistencyException reason:[NSString stringWithFormat:@"An internal error occured at %@:%d", [NSString stringWithUTF8String:__FILE__], __LINE__] userInfo:NULL]
 
 // Exported symbols.  Error domains, keys, etc.
@@ -324,7 +324,7 @@ static NSError *RKLNSErrorForRegex(NSString *regexString, RKLRegexOptions regexO
 
   RKLClearCacheSlotLastString(cacheSlot); // Clear the cached state for this regex.
   if(string->uniChar == NULL) { exception = RKLInternalException; goto exitNow; } // assertion check.
-  uregex_setText(cacheSlot->icu_regex, string->uniChar, string->length, &status); // "set" the ICU regex to this string.
+  uregex_setText(cacheSlot->icu_regex, string->uniChar, (int32_t) string->length, &status); // "set" the ICU regex to this string.
   if(status != 0) { goto exitNow; }
   cacheSlot->last = *string; // Cache the last string we set this regex to.
   
@@ -334,7 +334,7 @@ static NSError *RKLNSErrorForRegex(NSString *regexString, RKLRegexOptions regexO
     BOOL useFindNext = (range.location == (NSMaxRange(cacheSlot->lastMatchRange) + ((cacheSlot->lastMatchRange.length == 0) ? 1 : 0))) ? YES : NO;
 
     cacheSlot->lastFindRange = NSNotFoundRange; // Cleared the cached search/find range.
-    if(useFindNext == NO) { if((uregex_find    (cacheSlot->icu_regex, range.location, &status) == NO) || (status != 0)) { goto exitNow; } }
+    if(useFindNext == NO) { if((uregex_find    (cacheSlot->icu_regex, (int32_t) range.location, &status) == NO) || (status != 0)) { goto exitNow; } }
     else {                  if((uregex_findNext(cacheSlot->icu_regex,                 &status) == NO) || (status != 0)) { goto exitNow; } }
 
     if(RKLGetRangeForCapture(cacheSlot->icu_regex, status, 0, cacheSlot->lastMatchRange) != 0) { goto exitNow; }
@@ -342,7 +342,7 @@ static NSError *RKLNSErrorForRegex(NSString *regexString, RKLRegexOptions regexO
   }
 
   if(NSRangeInsideRange(cacheSlot->lastMatchRange, range) == NO) { goto exitNow; } // If the regex matched outside the requested range, exit.
-  if(capture == 0) { captureRange = cacheSlot->lastMatchRange; } else { RKLGetRangeForCapture(cacheSlot->icu_regex, status, capture, captureRange); }
+  if(capture == 0) { captureRange = cacheSlot->lastMatchRange; } else { (void) RKLGetRangeForCapture(cacheSlot->icu_regex, status, capture, captureRange); }
 
  exitNow: // A bit of advice...
   OSSpinLockUnlock(&cacheSpinLock); // Always... no, no... never... forget to unlock your locks.

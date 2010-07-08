@@ -14,7 +14,8 @@
 - (NSMutableArray *)deepMutableCopy;
 {
     NSMutableArray *newArray;
-    unsigned int index, count;
+    unsigned int index;
+	NSUInteger count;
 	
     count = [self count];
     newArray = [[NSMutableArray allocWithZone:[self zone]] initWithCapacity:count];

@@ -100,5 +100,6 @@
 // Processing templates.
 - (NSString *)processTemplate:(NSString *)templateString withVariables:(NSDictionary *)variables;
 - (NSString *)processTemplateInFileAtPath:(NSString *)templatePath withVariables:(NSDictionary *)variables;
+- (NSString *)processTemplateInFileAtURL:(NSURL*) templateURL withVariables:(NSDictionary *)variables;
 
 @end
