@@ -1,35 +1,11 @@
 //
 //  NSRegularExpressionTemplateMatcher.m
 //
-//  Created by Sam Deane
+//  Created by Sam Deane on 05/12/2013.
 //  Copyright 2013 Elegant Chaos. All rights reserved.
 //
 
 #import "NSRegularExpressionTemplateMatcher.h"
-
-typedef uint32_t RKLRegexOptions;
-enum { RKLNoOptions             = 0 };
-
-@interface NSString(RegexKitLiteReplacement)
-- (NSRange)rangeOfRegex:(NSRegularExpression*)regex options:(RKLRegexOptions)options inRange:(NSRange)range capture:(NSInteger)capture error:(NSError **)error;
-@end
-@implementation NSString(RegexKitLiteReplacement)
-- (NSRange)rangeOfRegex:(NSRegularExpression*)regex options:(RKLRegexOptions)options inRange:(NSRange)range capture:(NSInteger)capture error:(NSError **)error
-{
-    NSTextCheckingResult* match = [[regex matchesInString:self options:0 range:range] firstObject];
-    NSRange result;
-    if (match)
-        result = [match rangeAtIndex:capture];
-    else
-        result = NSMakeRange(NSNotFound, 0);
-    
-    if ((int)result.location == -1)
-        result.location = NSNotFound;
-    
-    return result;
-}
-
-@end
 
 @implementation NSRegularExpressionTemplateMatcher
 
@@ -77,10 +53,24 @@ enum { RKLNoOptions             = 0 };
     
 }
 
+- (NSRange)matchString:(NSString*)string inRegex:(NSRegularExpression*)regex inRange:(NSRange)range capture:(NSInteger)capture
+{
+    NSTextCheckingResult* match = [[regex matchesInString:string options:0 range:range] firstObject];
+    NSRange result;
+    if (match)
+        result = [match rangeAtIndex:capture];
+    else
+        result = NSMakeRange(NSNotFound, 0);
+    
+    if ((int)result.location == -1)
+        result.location = NSNotFound;
+    
+    return result;
+}
 
 - (NSDictionary *)firstMarkerWithinRange:(NSRange)range
 {
-	NSRange matchRange = [self.templateString rangeOfRegex:self.regex options:RKLNoOptions inRange:range capture:0 error:NULL];
+	NSRange matchRange = [self matchString:self.templateString inRegex:self.regex inRange:range capture:0];
 	NSMutableDictionary *markerInfo = nil;
 	if (matchRange.length > 0) {
 		markerInfo = [NSMutableDictionary dictionary];
@@ -93,7 +83,7 @@ enum { RKLNoOptions             = 0 };
 		
 		// Find type of match
 		NSString *matchType = nil;
-		NSRange mrkrSubRange = [matchString rangeOfRegex:regex options:RKLNoOptions inRange:localRange capture:1 error:NULL];
+		NSRange mrkrSubRange = [self matchString:matchString inRegex:self.regex inRange:localRange capture:1];
 		BOOL isMarker = (mrkrSubRange.length > 0); // only matches if match has marker-delimiters
 		int offset = 0;
 		if (isMarker) {
@@ -105,7 +95,7 @@ enum { RKLNoOptions             = 0 };
 		markerInfo[MARKER_TYPE_KEY] = matchType;
 		
 		// Split marker string into marker-name and arguments.
-		NSRange markerRange = [matchString rangeOfRegex:regex options:RKLNoOptions inRange:localRange capture:2 + offset error:NULL];
+		NSRange markerRange = [self matchString:matchString inRegex:self.regex inRange:localRange capture:2 + offset];
 		if (markerRange.length > 0) {
 			NSString *markerString = [matchString substringWithRange:markerRange];
 			NSArray *markerComponents = [self argumentsFromString:markerString];
@@ -118,7 +108,7 @@ enum { RKLNoOptions             = 0 };
 			}
 			
 			// Check for filter.
-			NSRange filterRange = [matchString rangeOfRegex:regex options:RKLNoOptions inRange:localRange capture:3 + offset error:NULL];
+			NSRange filterRange = [self matchString:matchString inRegex:self.regex inRange:localRange capture:3 + offset];
 			if (filterRange.length > 0) {
 				// Found a filter. Obtain filter string.
 				NSString *filterString = [matchString substringWithRange:filterRange];
@@ -126,8 +116,8 @@ enum { RKLNoOptions             = 0 };
 				// Convert first : plus any immediately-following whitespace into a space.
 				localRange = NSMakeRange(0, [filterString length]);
 				NSString *space = @" ";
-				NSRange filterArgDelimRange = [filterString rangeOfRegex:self.filterArgDelimPattern options:RKLNoOptions inRange:localRange
-																 capture:0 error:NULL];
+				NSRange filterArgDelimRange = [self matchString:filterString inRegex:self.filterArgDelimPattern inRange:localRange
+																 capture:0];
 				if (filterArgDelimRange.length > 0) {
 					// Replace found text with space.
 					filterString = [NSString stringWithFormat:@"%@%@%@", 
@@ -163,16 +153,16 @@ enum { RKLNoOptions             = 0 };
 	NSInteger location = 0;
 	while (location != NSNotFound) {
 		NSRange searchRange  = NSMakeRange(location, [argString length] - location);
-		NSRange entireRange = [argString rangeOfRegex:self.argsPattern options:RKLNoOptions
-											  inRange:searchRange capture:0 error:NULL];
-		NSRange matchedRange = [argString rangeOfRegex:self.argsPattern options:RKLNoOptions
-											   inRange:searchRange capture:1 error:NULL];
+		NSRange entireRange = [self matchString:argString inRegex:self.argsPattern
+											  inRange:searchRange capture:0];
+		NSRange matchedRange = [self matchString:argString inRegex:self.argsPattern
+											   inRange:searchRange capture:1];
 		if (matchedRange.length == 0) {
-			matchedRange = [argString rangeOfRegex:self.argsPattern options:RKLNoOptions
-										   inRange:searchRange capture:2 error:NULL];
+			matchedRange = [self matchString:argString inRegex:self.argsPattern
+										   inRange:searchRange capture:2];
 			if (matchedRange.length == 0) {
-				matchedRange = [argString rangeOfRegex:self.argsPattern options:RKLNoOptions
-											   inRange:searchRange capture:3 error:NULL];
+				matchedRange = [self matchString:argString inRegex:self.argsPattern
+											   inRange:searchRange capture:3];
 			}
 		}
 		
@@ -186,16 +176,6 @@ enum { RKLNoOptions             = 0 };
 	
 	return args;
 }
-
-
-@synthesize engine;
-@synthesize markerStart;
-@synthesize markerEnd;
-@synthesize exprStart;
-@synthesize exprEnd;
-@synthesize filterDelimiter;
-@synthesize templateString;
-@synthesize regex;
 
 
 @end

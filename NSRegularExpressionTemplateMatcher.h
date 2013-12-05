@@ -1,20 +1,14 @@
 //
-//  ICUTemplateMatcher.h
+//  NSRegularExpressionTemplateMatcher.h
 //
-//  Created by Matt Gemmell on 19/05/2008.
-//  Copyright 2008 Instinctive Code. All rights reserved.
+//  Created by Sam Deane on 05/12/2013.
+//  Copyright 2013 Elegant Chaos. All rights reserved.
 //
 
 #import "MGTemplateEngine.h"
 
 /*
- This is an example Matcher for MGTemplateEngine, implemented using libicucore on Leopard, 
- via the RegexKitLite library: http://regexkit.sourceforge.net/#RegexKitLite
- 
- This project includes everything you need, as long as you're building on Mac OS X 10.5 or later.
- 
- Other matchers can easily be implemented using the MGTemplateEngineMatcher protocol,
- if you prefer to use another regex framework, or use another matching method entirely.
+ This is an example Matcher for MGTemplateEngine, implemented using the modern 10.7+ NSReguarExpression API.
  */
 
 @interface NSRegularExpressionTemplateMatcher : NSObject <MGTemplateEngineMatcher>
