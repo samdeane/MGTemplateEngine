@@ -6,9 +6,9 @@
  *
  */
 
-#import "MGTemplateEngine.h"
+@class MGTemplateEngine;
 
-@protocol MGTemplateMarker
+@protocol MGTemplateMarker < NSObject >
 @required
 - (id)initWithTemplateEngine:(MGTemplateEngine *)engine; // to avoid retain cycles, use a weak reference for engine.
 - (NSArray *)markers; // array of markers (each unique across all markers) this object handles.

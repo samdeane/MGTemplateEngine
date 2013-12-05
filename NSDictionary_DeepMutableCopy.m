@@ -22,17 +22,17 @@
     // Run through the new dictionary and replace any objects that respond to -deepMutableCopy or -mutableCopy with copies.
     keyEnumerator = [[newDictionary allKeys] objectEnumerator];
     while ((aKey = [keyEnumerator nextObject])) {
-        anObject = [newDictionary objectForKey:aKey];
+        anObject = newDictionary[aKey];
         if ([anObject respondsToSelector:@selector(deepMutableCopy)]) {
             anObject = [anObject deepMutableCopy];
-            [newDictionary setObject:anObject forKey:aKey];
+            newDictionary[aKey] = anObject;
             [anObject release];
         } else if ([anObject respondsToSelector:@selector(mutableCopyWithZone:)]) {
             anObject = [anObject mutableCopyWithZone:nil];
-            [newDictionary setObject:anObject forKey:aKey];
+            newDictionary[aKey] = anObject;
             [anObject release];
         } else {
-			[newDictionary setObject:anObject forKey:aKey];
+			newDictionary[aKey] = anObject;
 		}
     }
 	

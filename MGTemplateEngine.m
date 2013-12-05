@@ -358,7 +358,7 @@
 		// Put the variable into the current block-stack frame, or _templateVariables otherwise.
 		NSMutableDictionary *vars;
 		if ([_openBlocksStack count] > 0) {
-			vars = [[_openBlocksStack lastObject] objectForKey:BLOCK_VARIABLES_KEY];
+			vars = [(NSDictionary*)[_openBlocksStack lastObject] objectForKey:BLOCK_VARIABLES_KEY];
 		} else {
 			vars = _templateVariables;
 		}
@@ -551,7 +551,7 @@
 				} else if (blockEnded) {
 					if (!blockInfo || 
 						([_openBlocksStack count] > 0 && 
-						 ![(NSArray *)[[_openBlocksStack lastObject] objectForKey:BLOCK_END_NAMES_KEY] containsObject:matchMarker])) {
+						 ![(NSArray *)[(NSDictionary*)[_openBlocksStack lastObject] objectForKey:BLOCK_END_NAMES_KEY] containsObject:matchMarker])) {
 						// The marker-handler just told us a block ended, but the current block was not
 						// started by that marker-handler. This means a syntax error exists in the template,
 						// specifically an unterminated block (the current block).
@@ -561,7 +561,7 @@
 							errMsg = [NSString stringWithFormat:@"Marker \"%@\" reported that a non-existent block ended", 
 									  matchMarker];
 						} else {
-							NSString *currBlockName = [[_openBlocksStack lastObject] objectForKey:BLOCK_NAME_KEY];
+							NSString *currBlockName = [(NSDictionary*)[_openBlocksStack lastObject] objectForKey:BLOCK_NAME_KEY];
 							errMsg = [NSString stringWithFormat:@"Marker \"%@\" reported that a block ended, \
 but current block was started by \"%@\" marker", 
 									  matchMarker, currBlockName];

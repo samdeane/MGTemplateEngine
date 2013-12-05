@@ -185,18 +185,18 @@ static RKLCacheSlot *getCachedRegex(NSString *regexString, RKLRegexOptions regex
 
 static NSError *RKLNSErrorForRegex(NSString *regexString, RKLRegexOptions regexOptions, UParseError *parseError, int status) {
   NSNumber *regexOptionsNumber = [NSNumber numberWithInt:regexOptions];
-  NSNumber *lineNumber         = [NSNumber numberWithInt:parseError->line];
-  NSNumber *offsetNumber       = [NSNumber numberWithInt:parseError->offset];
+  NSNumber *lineNumber         = @(parseError->line);
+  NSNumber *offsetNumber       = @(parseError->offset);
   NSString *preContextString   = [NSString stringWithCharacters:&parseError->preContext[0]  length:u_strlen(&parseError->preContext[0])];
   NSString *postContextString  = [NSString stringWithCharacters:&parseError->postContext[0] length:u_strlen(&parseError->postContext[0])];
-  NSString *errorNameString    = [NSString stringWithUTF8String:u_errorName(status)];
+  NSString *errorNameString    = @(u_errorName(status));
   NSString *reasonString       = [NSString stringWithFormat:@"The error %@ occured at line %d, column %d: %@<<HERE>>%@", errorNameString, parseError->line, parseError->offset, preContextString, postContextString];
 
   // If line == -1, parseError doesn't contain any useful information.  Set lineNumber to NULL,
   // which will stop adding objects to the dictionary at that point, ignoring everything after.
   if(parseError->line == -1) { reasonString = [NSString stringWithFormat:@"The error %@ occured.", errorNameString]; lineNumber = NULL; }
 
-  return([NSError errorWithDomain:RKLICURegexErrorDomain code:(NSInteger)status userInfo:[NSDictionary dictionaryWithObjectsAndKeys: @"There was an error compiling the regular expression.", @"NSLocalizedDescription", reasonString, @"NSLocalizedFailureReason", regexString, RKLICURegexRegexErrorKey, regexOptionsNumber, RKLICURegexRegexOptionsErrorKey, lineNumber, RKLICURegexLineErrorKey, offsetNumber, RKLICURegexOffsetErrorKey, preContextString, RKLICURegexPreContextErrorKey, postContextString, RKLICURegexPostContextErrorKey, errorNameString, RKLICURegexErrorNameErrorKey, NULL]]);
+  return([NSError errorWithDomain:RKLICURegexErrorDomain code:(NSInteger)status userInfo:@{@"NSLocalizedDescription": @"There was an error compiling the regular expression.", @"NSLocalizedFailureReason": reasonString, RKLICURegexRegexErrorKey: regexString, RKLICURegexRegexOptionsErrorKey: regexOptionsNumber, RKLICURegexLineErrorKey: lineNumber, RKLICURegexOffsetErrorKey: offsetNumber, RKLICURegexPreContextErrorKey: preContextString, RKLICURegexPostContextErrorKey: postContextString, RKLICURegexErrorNameErrorKey: errorNameString}]);
 }
 
 @implementation NSString (RegexKitLiteAdditions)

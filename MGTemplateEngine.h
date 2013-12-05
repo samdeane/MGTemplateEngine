@@ -68,17 +68,17 @@
 	NSString *templateContents;
 }
 
-@property(retain) NSString *markerStartDelimiter;
-@property(retain) NSString *markerEndDelimiter;
-@property(retain) NSString *expressionStartDelimiter;
-@property(retain) NSString *expressionEndDelimiter;
-@property(retain) NSString *filterDelimiter;
-@property(retain) NSString *literalStartMarker;
-@property(retain) NSString *literalEndMarker;
-@property(assign, readonly) NSRange remainingRange;
-@property(assign) id <MGTemplateEngineDelegate> delegate;	// weak ref
-@property(retain) id <MGTemplateEngineMatcher> matcher;
-@property(retain, readonly) NSString *templateContents;
+@property(retain, nonatomic) NSString *markerStartDelimiter;
+@property(retain, nonatomic) NSString *markerEndDelimiter;
+@property(retain, nonatomic) NSString *expressionStartDelimiter;
+@property(retain, nonatomic) NSString *expressionEndDelimiter;
+@property(retain, nonatomic) NSString *filterDelimiter;
+@property(retain, nonatomic) NSString *literalStartMarker;
+@property(retain, nonatomic) NSString *literalEndMarker;
+@property(assign, nonatomic, readonly) NSRange remainingRange;
+@property(assign, nonatomic) id <MGTemplateEngineDelegate> delegate;	// weak ref
+@property(retain, nonatomic) id <MGTemplateEngineMatcher> matcher;
+@property(retain, nonatomic, readonly) NSString *templateContents;
 
 // Creation.
 + (NSString *)version;

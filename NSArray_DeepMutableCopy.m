@@ -22,16 +22,21 @@
     for (index = 0; index < count; index++) {
         id anObject;
 		
-        anObject = [self objectAtIndex:index];
-        if ([anObject respondsToSelector:@selector(deepMutableCopy)]) {
+        anObject = self[index];
+        if ([anObject respondsToSelector:@selector(deepMutableCopy)]) 
+        {
             anObject = [anObject deepMutableCopy];
             [newArray addObject:anObject];
             [anObject release];
-        } else if ([anObject respondsToSelector:@selector(mutableCopyWithZone:)]) {
+        }
+        else if ([anObject respondsToSelector:@selector(mutableCopyWithZone:)]) 
+        {
             anObject = [anObject mutableCopyWithZone:nil];
             [newArray addObject:anObject];
             [anObject release];
-        } else {
+        }
+        else 
+        {
             [newArray addObject:anObject];
         }
     }

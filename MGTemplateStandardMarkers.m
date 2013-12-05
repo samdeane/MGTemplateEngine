@@ -388,7 +388,7 @@
 				} else if ([op isEqualToString:@"<="]) {
 					argTrue = (num1 <= num2);
 				} else if ([op isEqualToString:@"\%"]) {
-					argTrue = ((num1 % num2) > 0);
+					argTrue = (num2 != 0) && ((num1 % num2) > 0);
 				}
 			}
 			
@@ -414,7 +414,7 @@
 		
 	} else if ([marker isEqualToString:ELSE]) {
 		if ([self currentBlock:blockInfo matchesTopOfStack:ifStack]) {
-			NSMutableDictionary *frame = [[ifStack lastObject] objectForKey:IF_VARS];
+			NSMutableDictionary *frame = [(NSMutableDictionary*)[ifStack lastObject] objectForKey:IF_VARS];
 			BOOL elseSeen = [[frame objectForKey:IF_ELSE_SEEN] boolValue];
 			BOOL argTrue = [[frame objectForKey:IF_ARG_TRUE] boolValue];
 			BOOL modifyOutput = [[frame objectForKey:DISABLE_OUTPUT] boolValue];
@@ -433,7 +433,7 @@
 		
 	} else if ([marker isEqualToString:IF_END]) {
 		if ([self currentBlock:blockInfo matchesTopOfStack:ifStack]) {
-			NSMutableDictionary *frame = [[ifStack lastObject] objectForKey:IF_VARS];
+			NSMutableDictionary *frame = [(NSMutableDictionary*)[ifStack lastObject] objectForKey:IF_VARS];
 			BOOL modifyOutput = [[frame objectForKey:DISABLE_OUTPUT] boolValue];
 			if (modifyOutput) {
 				// If we're modifying output, it was enabled when this block started.

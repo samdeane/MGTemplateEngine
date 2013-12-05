@@ -28,14 +28,14 @@
 	NSString *regex;
 }
 
-@property(assign) MGTemplateEngine *engine; // weak ref
-@property(retain) NSString *markerStart;
-@property(retain) NSString *markerEnd;
-@property(retain) NSString *exprStart;
-@property(retain) NSString *exprEnd;
-@property(retain) NSString *filterDelimiter;
-@property(retain) NSString *templateString;
-@property(retain) NSString *regex;
+@property(assign, nonatomic) MGTemplateEngine *engine; // weak ref
+@property(retain, nonatomic) NSString *markerStart;
+@property(retain, nonatomic) NSString *markerEnd;
+@property(retain, nonatomic) NSString *exprStart;
+@property(retain, nonatomic) NSString *exprEnd;
+@property(retain, nonatomic) NSString *filterDelimiter;
+@property(retain, nonatomic) NSString *templateString;
+@property(retain, nonatomic) NSString *regex;
 
 + (ICUTemplateMatcher *)matcherWithTemplateEngine:(MGTemplateEngine *)theEngine;
 
