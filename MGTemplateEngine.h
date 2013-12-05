@@ -44,14 +44,6 @@
 #import "MGTemplateFilter.h"
 
 @interface MGTemplateEngine : NSObject {
-@public
-	NSString *markerStartDelimiter;		// default: {%
-	NSString *markerEndDelimiter;		// default: %}
-	NSString *expressionStartDelimiter;	// default: {{
-	NSString *expressionEndDelimiter;	// default: }}
-	NSString *filterDelimiter;			// default: |	example: {{ myVar|uppercase }}
-	NSString *literalStartMarker;		// default: literal
-	NSString *literalEndMarker;			// default: /literal
 @private
 	NSMutableArray *_openBlocksStack;
 	NSMutableDictionary *_globals;
@@ -61,11 +53,6 @@
 	NSMutableDictionary *_markers;
 	NSMutableDictionary *_templateVariables;
 	BOOL _literal;
-@public
-	NSRange remainingRange;
-	id <MGTemplateEngineDelegate> delegate;
-	id <MGTemplateEngineMatcher> matcher;
-	NSString *templateContents;
 }
 
 @property(retain, nonatomic) NSString *markerStartDelimiter;

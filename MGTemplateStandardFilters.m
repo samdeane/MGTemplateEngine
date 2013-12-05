@@ -41,7 +41,7 @@
 		// http://unicode.org/reports/tr35/tr35-4.html#Date_Format_Patterns 
 		// e.g. "dd MM yyyy" etc.
 		if ([value isKindOfClass:[NSDate class]] && [args count] == 1) {
-			NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
+			NSDateFormatter *dateFormatter = [[NSDateFormatter alloc] init];
 			[dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
 			NSString *format = args[0];
 			[dateFormatter setDateFormat:format];

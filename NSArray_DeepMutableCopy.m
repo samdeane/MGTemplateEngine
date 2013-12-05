@@ -18,7 +18,7 @@
 	NSUInteger count;
 	
     count = [self count];
-    newArray = [[NSMutableArray allocWithZone:[self zone]] initWithCapacity:count];
+    newArray = [[NSMutableArray alloc] initWithCapacity:count];
     for (index = 0; index < count; index++) {
         id anObject;
 		
@@ -27,13 +27,11 @@
         {
             anObject = [anObject deepMutableCopy];
             [newArray addObject:anObject];
-            [anObject release];
         }
         else if ([anObject respondsToSelector:@selector(mutableCopyWithZone:)]) 
         {
             anObject = [anObject mutableCopyWithZone:nil];
             [newArray addObject:anObject];
-            [anObject release];
         }
         else 
         {

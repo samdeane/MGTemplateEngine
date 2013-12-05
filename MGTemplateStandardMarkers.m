@@ -87,25 +87,6 @@
 	return self;
 }
 
-
-- (void)dealloc
-{
-	engine = nil;
-	[forStack release];
-	forStack = nil;
-	[sectionStack release];
-	sectionStack = nil;
-	[ifStack release];
-	ifStack = nil;
-	[commentStack release];
-	commentStack = nil;
-	[cycles release];
-	cycles = nil;
-	
-	[super dealloc];
-}
-
-
 - (NSArray *)markers
 {
 	return @[FOR_START, FOR_END, 
@@ -259,7 +240,7 @@
 				*blockEnded = YES;
 				return nil;
 			}
-			NSMutableDictionary *loopVars = [[blockVars[FOR_LOOP_VARS] mutableCopy] autorelease];
+			NSMutableDictionary *loopVars = [blockVars[FOR_LOOP_VARS] mutableCopy];
 			BOOL reversed = [loopVars[FOR_REVERSE] boolValue];
 			NSEnumerator *loopEnum = frame[FOR_STACK_ENUMERATOR];
 			NSObject *newEnumValue = nil;
@@ -493,11 +474,11 @@
 				if (class && [(id)class isKindOfClass:[NSObject class]]) {
 					if ([class conformsToProtocol:@protocol(MGTemplateFilter)]) {
 						// Instantiate and load filter.
-						NSObject <MGTemplateFilter> *obj = [[[class alloc] init] autorelease];
+						NSObject <MGTemplateFilter> *obj = [[class alloc] init];
 						[engine loadFilter:obj];
 					} else if ([class conformsToProtocol:@protocol(MGTemplateMarker)]) {
 						// Instantiate and load marker.
-						NSObject <MGTemplateMarker> *obj = [[[class alloc] initWithTemplateEngine:engine] autorelease];
+						NSObject <MGTemplateMarker> *obj = [[class alloc] initWithTemplateEngine:engine];
 						[engine loadMarker:obj];
 					}
 				}
@@ -602,13 +583,9 @@
 - (void)engineFinishedProcessingTemplate
 {
 	// Clean up stacks etc.
-	[forStack release];
 	forStack = [[NSMutableArray alloc] init];
-	[sectionStack release];
 	sectionStack = [[NSMutableArray alloc] init];
-	[ifStack release];
 	ifStack = [[NSMutableArray alloc] init];
-	[commentStack release];
 	commentStack = [[NSMutableArray alloc] init];
 	cycles = [[NSMutableDictionary alloc] init];
 }

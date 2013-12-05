@@ -10,6 +10,7 @@
 #import "MGTemplateStandardFilters.h"
 #import "DeepMutableCopy.h"
 
+#import <objc/message.h>
 
 #define DEFAULT_MARKER_START		@"{%"
 #define DEFAULT_MARKER_END			@"%}"
@@ -54,7 +55,7 @@
 
 + (MGTemplateEngine *)templateEngine
 {
-	return [[[MGTemplateEngine alloc] init] autorelease];
+	return [[MGTemplateEngine alloc] init];
 }
 
 
@@ -76,39 +77,13 @@
 		self.literalEndMarker = DEFAULT_LITERAL_END;
 		
 		// Load standard markers and filters.
-		[self loadMarker:[[[MGTemplateStandardMarkers alloc] initWithTemplateEngine:self] autorelease]];
-		[self loadFilter:[[[MGTemplateStandardFilters alloc] init] autorelease]];
+		[self loadMarker:[[MGTemplateStandardMarkers alloc] initWithTemplateEngine:self]];
+		[self loadFilter:[[MGTemplateStandardFilters alloc] init]];
 	}
 	
 	return self;
 }
 
-
-- (void)dealloc
-{
-	[_openBlocksStack release];
-	_openBlocksStack = nil;
-	[_globals release];
-	_globals = nil;
-	[_filters release];
-	_filters = nil;
-	[_markers release];
-	_markers = nil;
-	self.delegate = nil;
-	[templateContents release];
-	templateContents = nil;
-	[_templateVariables release];
-	_templateVariables = nil;
-	self.markerStartDelimiter = nil;
-	self.markerEndDelimiter = nil;
-	self.expressionStartDelimiter = nil;
-	self.expressionEndDelimiter = nil;
-	self.filterDelimiter = nil;
-	self.literalStartMarker = nil;
-	self.literalEndMarker = nil;
-	
-	[super dealloc];
-}
 
 
 #pragma mark Managing persistent values.
@@ -199,7 +174,7 @@
 	if (delegate) {
 		SEL selector = (started) ? @selector(templateEngine:blockStarted:) : @selector(templateEngine:blockEnded:);
 		if ([(NSObject *)delegate respondsToSelector:selector]) {
-			[(NSObject *)delegate performSelector:selector withObject:self withObject:[_openBlocksStack lastObject]];
+            objc_msgSend(delegate, selector, self, [_openBlocksStack lastObject]);
 		}
 	}
 }
@@ -210,7 +185,7 @@
 	if (delegate) {
 		SEL selector = @selector(templateEngineFinishedProcessingTemplate:);
 		if ([(NSObject *)delegate respondsToSelector:selector]) {
-			[(NSObject *)delegate performSelector:selector withObject:self];
+            objc_msgSend(delegate, selector, self);
 		}
 	}
 }
@@ -390,7 +365,6 @@
 - (NSString *)processTemplate:(NSString *)templateString withVariables:(NSDictionary *)variables
 {
 	// Set up environment.
-	[_openBlocksStack release];
 	_openBlocksStack = [[NSMutableArray alloc] init];
 	_globals[GLOBAL_ENGINE_GROUP] = @{GLOBAL_ENGINE_DELIMITERS: @{GLOBAL_DELIM_MARKER_START: self.markerStartDelimiter, 
 						  GLOBAL_DELIM_MARKER_END: self.markerEndDelimiter, 
@@ -404,10 +378,8 @@
 	_globals[@"yes"] = @YES;
 	_globals[@"no"] = @NO;
 	_outputDisabledCount = 0;
-	[templateContents release];
-	templateContents = [templateString retain];
+	templateContents = templateString;
 	_templateLength = (int) [templateString length];
-	[_templateVariables release];
 	_templateVariables = [variables deepMutableCopy];
 	remainingRange = NSMakeRange(0, [templateString length]);
 	_literal = NO;
