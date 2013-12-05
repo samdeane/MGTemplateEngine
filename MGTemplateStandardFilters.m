@@ -20,10 +20,8 @@
 
 - (NSArray *)filters
 {
-	return [NSArray arrayWithObjects:
-			UPPERCASE, LOWERCASE, CAPITALIZED, 
-			DATE_FORMAT, COLOR_FORMAT, 
-			nil];
+	return @[UPPERCASE, LOWERCASE, CAPITALIZED, 
+			DATE_FORMAT, COLOR_FORMAT];
 }
 
 
@@ -45,7 +43,7 @@
 		if ([value isKindOfClass:[NSDate class]] && [args count] == 1) {
 			NSDateFormatter *dateFormatter = [[[NSDateFormatter alloc] init] autorelease];
 			[dateFormatter setFormatterBehavior:NSDateFormatterBehavior10_4];
-			NSString *format = [args objectAtIndex:0];
+			NSString *format = args[0];
 			[dateFormatter setDateFormat:format];
 			return [dateFormatter stringFromDate:(NSDate *)value];
 		}
@@ -56,7 +54,7 @@
 #else
 		if ([value isKindOfClass:[NSColor class]] && [args count] == 1) {
 #endif
-			NSString *format = [[args objectAtIndex:0] lowercaseString];
+			NSString *format = [args[0] lowercaseString];
 			if ([format isEqualToString:@"hex"]) {
 				// Output color in hex format RRGGBB (without leading # character).
 #if TARGET_OS_IPHONE

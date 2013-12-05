@@ -83,7 +83,7 @@ enum { RKLNoOptions             = 0 };
 	NSMutableDictionary *markerInfo = nil;
 	if (matchRange.length > 0) {
 		markerInfo = [NSMutableDictionary dictionary];
-		[markerInfo setObject:[NSValue valueWithRange:matchRange] forKey:MARKER_RANGE_KEY];
+		markerInfo[MARKER_RANGE_KEY] = [NSValue valueWithRange:matchRange];
 		
 		// Found a match. Obtain marker string.
 		NSString *matchString = [self.templateString substringWithRange:matchRange];
@@ -101,7 +101,7 @@ enum { RKLNoOptions             = 0 };
 			matchType = MARKER_TYPE_EXPRESSION;
 			offset = 3;
 		}
-		[markerInfo setObject:matchType forKey:MARKER_TYPE_KEY];
+		markerInfo[MARKER_TYPE_KEY] = matchType;
 		
 		// Split marker string into marker-name and arguments.
 		NSRange markerRange = [matchString rangeOfRegex:regex options:RKLNoOptions inRange:localRange capture:2 + offset error:NULL];
@@ -109,11 +109,10 @@ enum { RKLNoOptions             = 0 };
 			NSString *markerString = [matchString substringWithRange:markerRange];
 			NSArray *markerComponents = [self argumentsFromString:markerString];
 			if (markerComponents && [markerComponents count] > 0) {
-				[markerInfo setObject:[markerComponents objectAtIndex:0] forKey:MARKER_NAME_KEY];
+				markerInfo[MARKER_NAME_KEY] = markerComponents[0];
 				NSUInteger count = [markerComponents count];
 				if (count > 1) {
-					[markerInfo setObject:[markerComponents subarrayWithRange:NSMakeRange(1, count - 1)] 
-								   forKey:MARKER_ARGUMENTS_KEY];
+					markerInfo[MARKER_ARGUMENTS_KEY] = [markerComponents subarrayWithRange:NSMakeRange(1, count - 1)];
 				}
 			}
 			
@@ -140,11 +139,10 @@ enum { RKLNoOptions             = 0 };
 				// Split into filter-name and arguments.
 				NSArray *filterComponents = [self argumentsFromString:filterString];
 				if (filterComponents && [filterComponents count] > 0) {
-					[markerInfo setObject:[filterComponents objectAtIndex:0] forKey:MARKER_FILTER_KEY];
+					markerInfo[MARKER_FILTER_KEY] = filterComponents[0];
 					NSUInteger count = [filterComponents count];
 					if (count > 1) {
-						[markerInfo setObject:[filterComponents subarrayWithRange:NSMakeRange(1, count - 1)] 
-									   forKey:MARKER_FILTER_ARGUMENTS_KEY];
+						markerInfo[MARKER_FILTER_ARGUMENTS_KEY] = [filterComponents subarrayWithRange:NSMakeRange(1, count - 1)];
 					}
 				}
 			}
