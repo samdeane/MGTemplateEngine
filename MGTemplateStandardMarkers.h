@@ -9,7 +9,7 @@
 #import "MGTemplateMarker.h"
 
 @interface MGTemplateStandardMarkers : NSObject <MGTemplateMarker> {
-	MGTemplateEngine *engine; // weak ref
+	__weak MGTemplateEngine *engine;
 	NSMutableArray *forStack;
 	NSMutableArray *sectionStack;
 	NSMutableArray *ifStack;

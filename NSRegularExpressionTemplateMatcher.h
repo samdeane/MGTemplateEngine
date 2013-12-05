@@ -19,7 +19,7 @@
 
 @interface NSRegularExpressionTemplateMatcher : NSObject <MGTemplateEngineMatcher>
 
-@property(assign, nonatomic) MGTemplateEngine *engine; // weak ref
+@property(weak, nonatomic) MGTemplateEngine *engine;
 @property(retain, nonatomic) NSString *markerStart;
 @property(retain, nonatomic) NSString *markerEnd;
 @property(retain, nonatomic) NSString *exprStart;

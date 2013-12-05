@@ -120,6 +120,8 @@
 				  outputEnabled:(BOOL *)outputEnabled nextRange:(NSRange *)nextRange 
 			   currentBlockInfo:(NSDictionary *)blockInfo newVariables:(NSDictionary **)newVariables
 {
+    MGTemplateEngine* e = engine;
+    
 	if ([marker isEqualToString:FOR_START]) {
 		if (args && [args count] >= 3) {
 			// Determine which type of loop this is.
@@ -152,7 +154,7 @@
 				startIndex = 0;
 				
 				// Check that endArg is a collection.
-				NSObject *obj = [engine resolveVariable:endArg];
+				NSObject *obj = [e resolveVariable:endArg];
 				if (obj && [obj respondsToSelector:@selector(objectEnumerator)] && [obj respondsToSelector:@selector(count)]) {
 					endIndex = (int) [(NSArray *)obj count];
 					if (endIndex > 0) {
@@ -200,7 +202,7 @@
 				// Add parentLoop if it exists.
 				if (blockInfo) {
 					NSDictionary *parentLoop;
-					parentLoop = (NSDictionary *)[engine resolveVariable:FOR_LOOP_VARS]; // in case parent loop isn't in the first parent stack-frame.
+					parentLoop = (NSDictionary *)[e resolveVariable:FOR_LOOP_VARS]; // in case parent loop isn't in the first parent stack-frame.
 					if (parentLoop) {
 						loopVars[FOR_PARENT_LOOP] = parentLoop;
 					}
@@ -343,10 +345,10 @@
 				firstNumeric = [self argIsNumeric:firstArg intValue:&num1 checkVariables:YES];
 				secondNumeric = [self argIsNumeric:secondArg intValue:&num2 checkVariables:YES];
 				if (!firstNumeric) {
-					num1 = ([engine resolveVariable:firstArg]) ? 1 : 0;
+					num1 = ([e resolveVariable:firstArg]) ? 1 : 0;
 				}
 				if (!secondNumeric) {
-					num2 = ([engine resolveVariable:secondArg]) ? 1 : 0;
+					num2 = ([e resolveVariable:secondArg]) ? 1 : 0;
 				}
 				NSString *op = [args[1] lowercaseString];
 				
@@ -475,11 +477,11 @@
 					if ([class conformsToProtocol:@protocol(MGTemplateFilter)]) {
 						// Instantiate and load filter.
 						NSObject <MGTemplateFilter> *obj = [[class alloc] init];
-						[engine loadFilter:obj];
+						[e loadFilter:obj];
 					} else if ([class conformsToProtocol:@protocol(MGTemplateMarker)]) {
 						// Instantiate and load marker.
 						NSObject <MGTemplateMarker> *obj = [[class alloc] initWithTemplateEngine:engine];
-						[engine loadMarker:obj];
+						[e loadMarker:obj];
 					}
 				}
 			}
@@ -540,7 +542,8 @@
 {
 	BOOL argTrue = NO;
 	if (arg) {
-		NSObject *val = [engine resolveVariable:arg];
+        MGTemplateEngine* e = engine;
+		NSObject *val = [e resolveVariable:arg];
 		if (val) {
 			if ([val isKindOfClass:[NSNumber class]]) {
 				argTrue = [(NSNumber *)val boolValue];
@@ -564,7 +567,8 @@
 			value = [arg intValue];
 		} else if (checkVars) {
 			// Check to see if arg is a variable with an intValue.
-			NSObject *argObj = [engine resolveVariable:arg];
+            MGTemplateEngine* e = engine;
+			NSObject *argObj = [e resolveVariable:arg];
 			NSString *argStr = [NSString stringWithFormat:@"%@", argObj];
 			if (argObj && [argObj respondsToSelector:@selector(intValue)] && 
 				[self argIsNumeric:argStr intValue:&value checkVariables:NO]) { // avoid recursion

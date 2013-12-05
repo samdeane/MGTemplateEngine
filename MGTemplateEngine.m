@@ -39,9 +39,20 @@
 
 @end
 
+@interface MGTemplateEngine()
+{
+	NSMutableArray *_openBlocksStack;
+	NSMutableDictionary *_globals;
+	int _outputDisabledCount;
+	int _templateLength;
+	NSMutableDictionary *_filters;
+	NSMutableDictionary *_markers;
+	NSMutableDictionary *_templateVariables;
+	BOOL _literal;
+}
+@end
 
 @implementation MGTemplateEngine
-
 
 #pragma mark Creation and destruction
 

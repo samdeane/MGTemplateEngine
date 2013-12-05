@@ -52,12 +52,13 @@ enum { RKLNoOptions             = 0 };
 - (void)engineSettingsChanged
 {
 	// This method is a good place to cache settings from the engine.
-	self.markerStart = engine.markerStartDelimiter;
-	self.markerEnd = engine.markerEndDelimiter;
-	self.exprStart = engine.expressionStartDelimiter;
-	self.exprEnd = engine.expressionEndDelimiter;
-	self.filterDelimiter = engine.filterDelimiter;
-	self.templateString = engine.templateContents;
+    MGTemplateEngine* e = self.engine;
+	self.markerStart = e.markerStartDelimiter;
+	self.markerEnd = e.markerEndDelimiter;
+	self.exprStart = e.expressionStartDelimiter;
+	self.exprEnd = e.expressionEndDelimiter;
+	self.filterDelimiter = e.filterDelimiter;
+	self.templateString = e.templateContents;
 	
 	// Note: the \Q ... \E syntax causes everything inside it to be treated as literals.
 	// This help us in the case where the marker/filter delimiters have special meaning 

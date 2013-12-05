@@ -43,17 +43,7 @@
 #import "MGTemplateMarker.h"
 #import "MGTemplateFilter.h"
 
-@interface MGTemplateEngine : NSObject {
-@private
-	NSMutableArray *_openBlocksStack;
-	NSMutableDictionary *_globals;
-	int _outputDisabledCount;
-	int _templateLength;
-	NSMutableDictionary *_filters;
-	NSMutableDictionary *_markers;
-	NSMutableDictionary *_templateVariables;
-	BOOL _literal;
-}
+@interface MGTemplateEngine : NSObject
 
 @property(retain, nonatomic) NSString *markerStartDelimiter;
 @property(retain, nonatomic) NSString *markerEndDelimiter;
@@ -63,7 +53,7 @@
 @property(retain, nonatomic) NSString *literalStartMarker;
 @property(retain, nonatomic) NSString *literalEndMarker;
 @property(assign, nonatomic, readonly) NSRange remainingRange;
-@property(assign, nonatomic) id <MGTemplateEngineDelegate> delegate;	// weak ref
+@property(weak, nonatomic) id <MGTemplateEngineDelegate> delegate;
 @property(retain, nonatomic) id <MGTemplateEngineMatcher> matcher;
 @property(retain, nonatomic, readonly) NSString *templateContents;
 
