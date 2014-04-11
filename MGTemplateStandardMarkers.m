@@ -139,7 +139,8 @@
 			BOOL valid = NO;
 			NSString *startArg = args[0];
 			NSString *endArg = args[2];
-			int startIndex, endIndex;
+			int startIndex = 0;
+            int endIndex = 0;
 			if (isRange) {
 				// Check to see if either the arg itself is numeric, or it corresponds to a numeric variable.
 				valid = [self argIsNumeric:startArg intValue:&startIndex checkVariables:YES];
